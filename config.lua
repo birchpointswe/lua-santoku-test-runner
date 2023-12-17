@@ -10,7 +10,7 @@ local env = {
     "lua >= 5.1",
     "santoku >= 0.0.148-1",
     "santoku-system >= 0.0.3-1",
-    "santoku-fs >= 0.0.9-1"
+    "santoku-fs >= 0.0.6-1"
   },
 
 }
