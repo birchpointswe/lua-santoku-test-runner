@@ -1,6 +1,4 @@
 # Now
 
-- Allow async tests
-- Test: tags don't always show up correctly when errors occur (e.g what should
-  print "a: b: c" ends up printing just "c")
-- Test: show failing line numbers
+- Extra newlines are printed on failure that could be reduced for a more compact
+  output
