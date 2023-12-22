@@ -28,15 +28,13 @@ M.run = function (files, interp, match, stop)
         if not fp or match and not fp:match(match) then
           return
         end
+        print("Test: " .. fp)
         if interp then
-          print("Test: " .. fp)
           local ok, e, cd = sys.execute(str.split(interp):append(fp):unpack())
           check.err(sent).ok(ok, e, cd)
         elseif str.endswith(fp, ".lua") then
-          print("Test: " .. fp, ":  ")
           check.err(sent).ok(fs.loadfile(fp, setmetatable({}, M.MT_TEST)))()
         else
-          print("Test: " .. fp)
           local ok, e, cd = sys.execute(fp)
           check.err(sent).ok(ok, e, cd)
         end
