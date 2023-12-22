@@ -11,7 +11,8 @@ M.MT_TEST = {
   __index = _G
 }
 
-M.run = function (files, interp, match, stop)
+M.run = function (files, opts)
+  opts = opts or {}
   local sent = tup()
   return err.pwrap(function (check)
     print()
@@ -25,12 +26,12 @@ M.run = function (files, interp, match, stop)
       end)
       :flatten()
       :each(function (fp)
-        if not fp or match and not fp:match(match) then
+        if not fp or opts.match and not fp:match(opts.match) then
           return
         end
         print("Test: " .. fp)
-        if interp then
-          local ok, e, cd = sys.execute(str.split(interp):append(fp):unpack())
+        if opts.interp then
+          local ok, e, cd = sys.execute(opts.interp_opts or {}, str.split(opts.interp):append(fp):unpack())
           check.err(sent).ok(ok, e, cd)
         elseif str.endswith(fp, ".lua") then
           check.err(sent).ok(fs.loadfile(fp, setmetatable({}, M.MT_TEST)))()
@@ -40,7 +41,7 @@ M.run = function (files, interp, match, stop)
         end
       end)
   end, function (a, ...)
-    if a == sent and stop then
+    if a == sent and opts.stop then
       return false, ...
     elseif a == sent then
       print(...)
