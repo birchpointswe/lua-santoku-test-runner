@@ -7,6 +7,10 @@ local str = require("santoku.string")
 
 local M = {}
 
+M.MT_TEST = {
+  __index = _G
+}
+
 M.run = function (files, interp, match, stop)
   local sent = tup()
   return err.pwrap(function (check)
