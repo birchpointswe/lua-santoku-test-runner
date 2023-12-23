@@ -1,4 +1,3 @@
-local tup = require("santoku.tuple")
 local err = require("santoku.err")
 local gen = require("santoku.gen")
 local fs = require("santoku.fs")
@@ -7,15 +6,12 @@ local str = require("santoku.string")
 
 local M = {}
 
-M.MT_TEST = {
-  __index = _G
-}
+local MT = { __index = _G }
 
 M.run = function (files, opts)
   opts = opts or {}
-  local sent = tup()
   return err.pwrap(function (check)
-    print()
+
     gen.ivals(files)
       :map(function (fp)
         if check(fs.isdir(fp)) then
@@ -26,29 +22,36 @@ M.run = function (files, opts)
       end)
       :flatten()
       :each(function (fp)
+
         if not fp or opts.match and not fp:match(opts.match) then
           return
         end
+
         print("Test: " .. fp)
+
+        check = check:tag("test")
+
         if opts.interp then
           local ok, e, cd = sys.execute(opts.interp_opts or {}, str.split(opts.interp):append(fp):unpack())
-          check.err(sent).ok(ok, e, cd)
+          check(ok, e, cd)
         elseif str.endswith(fp, ".lua") then
-          check.err(sent).ok(fs.loadfile(fp, setmetatable({}, M.MT_TEST)))()
+          check(fs.loadfile(fp, setmetatable({}, MT)))()
         else
           local ok, e, cd = sys.execute(fp)
-          check.err(sent).ok(ok, e, cd)
+          check(ok, e, cd)
         end
+
       end)
-  end, function (a, ...)
-    if a == sent and opts.stop then
+
+  end, function (tag, ...)
+
+    if tag ~= "test" or opts.stop then
       return false, ...
-    elseif a == sent then
+    else
       print(...)
       return true
-    else
-      return a, ...
     end
+
   end)
 end
 
