@@ -1,6 +1,8 @@
 local err = require("santoku.err")
 local gen = require("santoku.gen")
 local fs = require("santoku.fs")
+local fun = require("santoku.fun")
+local op = require("santoku.op")
 local sys = require("santoku.system")
 local str = require("santoku.string")
 
@@ -32,7 +34,10 @@ M.run = function (files, opts)
         check = check:tag("test")
 
         if opts.interp then
-          check(sys.execute(opts.interp_opts or {}, str.split(opts.interp):append(fp):unpack()))
+          check(sys.execute(opts.interp_opts or {}, str.split(opts.interp)
+            :filter(fun.compose(op["not"], str.isempty))
+            :append(fp)
+            :unpack()))
         elseif str.endswith(fp, ".lua") then
           check(fs.loadfile(fp, setmetatable({}, MT)))()
         else
