@@ -31,7 +31,7 @@ M.run = function (files, opts)
 
         print("Test: " .. fp)
 
-        test_check = check:sub(function (...)
+        local test_check = check:sub(function (...)
           if opts.stop then
             return false, ...
           else
