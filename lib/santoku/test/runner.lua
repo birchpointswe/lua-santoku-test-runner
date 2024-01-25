@@ -1,4 +1,4 @@
-local err = require("santoku.err")
+local check = require("santoku.check")
 local gen = require("santoku.gen")
 local fs = require("santoku.fs")
 local fun = require("santoku.fun")
@@ -12,7 +12,7 @@ local MT = { __index = _G }
 
 M.run = function (files, opts)
   opts = opts or {}
-  return err.pwrap(function (check)
+  return check:wrap(function (check)
 
     gen.ivals(files)
       :map(function (fp)
