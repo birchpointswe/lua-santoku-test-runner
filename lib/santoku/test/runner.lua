@@ -31,29 +31,27 @@ M.run = function (files, opts)
 
         print("Test: " .. fp)
 
-        check = check:tag("test")
+        test_check = check:sub(function (...)
+          if opts.stop then
+            return false, ...
+          else
+            print(...)
+            return true
+          end
+        end)
 
         if opts.interp then
-          check(sys.execute(opts.interp_opts or {}, str.split(opts.interp)
+          test_check(sys.execute(opts.interp_opts or {}, str.split(opts.interp)
             :filter(fun.compose(op["not"], str.isempty))
             :append(fp)
             :unpack()))
         elseif str.endswith(fp, ".lua") then
-          check(fs.loadfile(fp, setmetatable({}, MT)))()
+          test_check(fs.loadfile(fp, setmetatable({}, MT)))()
         else
-          check(sys.execute(fp))
+          test_check(sys.execute(fp))
         end
 
       end)
-
-  end, function (tag, ...)
-
-    if tag ~= "test" or opts.stop then
-      return false, ...
-    else
-      print(...)
-      return true
-    end
 
   end)
 end
