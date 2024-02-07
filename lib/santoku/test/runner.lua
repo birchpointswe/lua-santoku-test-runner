@@ -22,8 +22,8 @@ local isdir = fs.isdir
 local varg = require("santoku.varg")
 local tup = varg.tup
 
-local arr = require("santoku.arr")
-local append = arr.append
+local arr = require("santoku.array")
+local push = arr.push
 local extend = arr.extend
 
 local str = require("santoku.string")
@@ -57,7 +57,7 @@ return function (files, opts)
         end
       end, pcall(function ()
         if interp then
-          execute(append(extend({}, interp), fp))
+          execute(push(extend({}, interp), fp))
         elseif endswith(fp, ".lua") then
           runfile(fp, run_env)
         else
