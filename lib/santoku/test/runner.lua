@@ -1,59 +1,65 @@
-local check = require("santoku.check")
-local gen = require("santoku.gen")
-local fs = require("santoku.fs")
-local fun = require("santoku.fun")
-local op = require("santoku.op")
+local validate = require("santoku.validate")
+local hasindex = validate.hasindex
+
+local iter = require("santoku.iter")
+local flatten = iter.flatten
+local map = iter.map
+local singleton = iter.singleton
+local ivals = iter.ivals
+
 local sys = require("santoku.system")
+local execute = sys.execute
+
+local fs = require("santoku.fs")
+local runfile = fs.runfile
+local isdir = fs.isdir
+
+local varg = require("santoku.varg")
+local tup = varg.tup
+
+local arr = require("santoku.arr")
+local append = arr.append
+local extend = arr.extend
+
 local str = require("santoku.string")
+local endswith = str.endswith
+local smatch = string.match
 
-local M = {}
+local run_env = setmetatable({}, { __index = _G })
 
-local MT = { __index = _G }
+return function (files, opts)
 
-M.run = function (files, opts)
+  assert(hasindex(files))
   opts = opts or {}
-  return check:wrap(function (check)
+  assert(hasindex(opts))
 
-    gen.ivals(files)
-      :map(function (fp)
-        if check(fs.isdir(fp)) then
-          return fs.files(fp, { recurse = true }):map(check)
+  local interp = opts.interp
+  local match = opts.match
+  local stop = opts.stop
+
+  for fp in flatten(map(function (fp)
+    if isdir(fp) then
+      return files(fp, true)
+    else
+      return singleton(fp)
+    end
+  end, ivals(files))) do
+    if fp and not (match and smatch(fp, match)) then
+      print("Test:", fp)
+      return tup(function (ok, ...)
+        if stop and ok then
+          error(...)
+        end
+      end, pcall(function ()
+        if interp then
+          execute(append(extend({}, interp), fp))
+        elseif endswith(fp, ".lua") then
+          runfile(fp, run_env)
         else
-          return gen.pack(fp)
+          execute(fp)
         end
-      end)
-      :flatten()
-      :each(function (fp)
+      end))
+    end
+  end
 
-        if not fp or opts.match and not fp:match(opts.match) then
-          return
-        end
-
-        print("Test: " .. fp)
-
-        local test_check = check:sub(function (...)
-          if opts.stop then
-            return false, ...
-          else
-            print(...)
-            return true
-          end
-        end)
-
-        if opts.interp then
-          test_check(sys.execute(opts.interp_opts or {}, str.split(opts.interp)
-            :filter(fun.compose(op["not"], str.isempty))
-            :append(fp)
-            :unpack()))
-        elseif str.endswith(fp, ".lua") then
-          test_check(fs.loadfile(fp, setmetatable({}, MT)))()
-        else
-          test_check(sys.execute(fp))
-        end
-
-      end)
-
-  end)
 end
-
-return M
