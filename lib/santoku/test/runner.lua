@@ -17,6 +17,7 @@ local execute = sys.execute
 
 local fs = require("santoku.fs")
 local runfile = fs.runfile
+local files = fs.files
 local isdir = fs.isdir
 
 local varg = require("santoku.varg")
@@ -49,7 +50,7 @@ return function (fps, opts)
       return singleton(fp)
     end
   end, ivals(fps))) do
-    if fp and not (match and smatch(fp, match)) then
+    if fp and ((not match) or smatch(fp, match)) then
       print("Test:", fp)
       return tup(function (ok, ...)
         if stop and not ok then
