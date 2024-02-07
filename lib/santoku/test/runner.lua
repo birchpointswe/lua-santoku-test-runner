@@ -32,9 +32,9 @@ local smatch = string.match
 
 local run_env = setmetatable({}, { __index = _G })
 
-return function (files, opts)
+return function (fps, opts)
 
-  assert(hasindex(files))
+  assert(hasindex(fps))
   opts = opts or {}
   assert(hasindex(opts))
 
@@ -48,12 +48,14 @@ return function (files, opts)
     else
       return singleton(fp)
     end
-  end, ivals(files))) do
+  end, ivals(fps))) do
     if fp and not (match and smatch(fp, match)) then
       print("Test:", fp)
       return tup(function (ok, ...)
-        if stop and ok then
+        if stop and not ok then
           error(...)
+        elseif not ok then
+          print(...)
         end
       end, pcall(function ()
         if interp then
