@@ -1,3 +1,8 @@
+local err = require("santoku.error")
+local assert = err.assert
+local error = err.error
+local pcall = err.pcall
+
 local validate = require("santoku.validate")
 local hasindex = validate.hasindex
 
