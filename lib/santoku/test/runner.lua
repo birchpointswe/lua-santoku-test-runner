@@ -52,7 +52,7 @@ return function (fps, opts)
   end, ivals(fps))) do
     if fp and ((not match) or smatch(fp, match)) then
       print("Test:", fp)
-      return tup(function (ok, ...)
+      tup(function (ok, ...)
         if stop and not ok then
           error(...)
         elseif not ok then
