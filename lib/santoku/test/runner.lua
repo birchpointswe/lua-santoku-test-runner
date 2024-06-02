@@ -1,6 +1,5 @@
 local err = require("santoku.error")
 local assert = err.assert
-local error = err.error
 local pcall = err.pcall
 
 local validate = require("santoku.validate")
@@ -16,6 +15,7 @@ local sys = require("santoku.system")
 local execute = sys.execute
 
 local fs = require("santoku.fs")
+local exists = fs.exists
 local runfile = fs.runfile
 local files = fs.files
 local isdir = fs.isdir
@@ -44,7 +44,9 @@ return function (fps, opts)
   local stop = opts.stop
 
   for fp in flatten(map(function (fp)
-    if isdir(fp) then
+    if not exists(fp) then
+      return function () end
+    elseif isdir(fp) then
       return files(fp, true)
     else
       return singleton(fp)
@@ -54,7 +56,8 @@ return function (fps, opts)
       print("Test:", fp)
       tup(function (ok, ...)
         if stop and not ok then
-          error(...)
+          print(...)
+          os.exit(1)
         elseif not ok then
           print(...)
         end
