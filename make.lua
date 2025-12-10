@@ -8,9 +8,9 @@ local env = {
 
   dependencies = {
     "lua >= 5.1",
-    "santoku >= 0.0.189-1",
-    "santoku-system >= 0.0.22-1",
-    "santoku-fs >= 0.0.28-1"
+    "santoku >= 0.0.309-1",
+    "santoku-system >= 0.0.60-1",
+    "santoku-fs >= 0.0.39-1"
   },
 
   test = {}
@@ -22,6 +22,6 @@ env.tarball = env.name .. "-" .. env.version .. ".tar.gz"
 env.download = env.homepage .. "/releases/download/" .. env.version .. "/" .. env.tarball
 
 return {
-  
+
   env = env
 }
