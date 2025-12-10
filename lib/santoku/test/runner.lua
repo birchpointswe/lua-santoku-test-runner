@@ -17,7 +17,7 @@ local isdir = fs.isdir
 local arr = require("santoku.array")
 local push = arr.push
 local copy = arr.copy
-local pulleach = arr.pulleach
+local ieach = arr.ieach
 
 local str = require("santoku.string")
 local endswith = str.endswith
@@ -61,9 +61,9 @@ return function (fps, opts)
     local fp = fps[i]
     if exists(fp) then
       if isdir(fp) then
-        pulleach(files(fp, true), function (f)
+        ieach(function (f)
           process_fp(f, interp, match, stop)
-        end)
+        end, files(fp, true))
       else
         process_fp(fp, interp, match, stop)
       end
