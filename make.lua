@@ -1,13 +1,13 @@
 local env = {
 
   name = "santoku-test-runner",
-  version = "0.0.25-1",
+  version = "0.0.26-1",
   variable_prefix = "TK_TEST_RUNNER",
   license = "MIT",
   public = true,
 
   dependencies = {
-    "lua >= 5.1",
+    "lua == 5.1",
     "santoku >= 0.0.310-1",
     "santoku-system >= 0.0.61-1",
     "santoku-fs >= 0.0.41-1"
@@ -17,7 +17,7 @@ local env = {
 
 }
 
-env.homepage = "https://github.com/treadwelllane/lua-" .. env.name
+env.homepage = "https://github.com/birchpointswe/lua-" .. env.name
 env.tarball = env.name .. "-" .. env.version .. ".tar.gz"
 env.download = env.homepage .. "/releases/download/" .. env.version .. "/" .. env.tarball
 
