@@ -1,37 +1,73 @@
-# santoku.test.runner
+# santoku-test-runner
 
-Test runner for executing Lua test files and directories.
+Test harness that runs spec files. The module returns a single function,
+`runner(fps, opts)`, that walks a list of paths and executes each spec file,
+optionally filtering by pattern and stopping on the first failure. The `toku`
+build framework uses it to run a project's `test/spec` suite. Built on base
+`santoku`, `santoku-system` (to spawn an interpreter), and `santoku-fs` (to
+discover and run files). See [../lua-santoku/README.md](../lua-santoku/README.md),
+[../lua-santoku-system/README.md](../lua-santoku-system/README.md), and
+[../lua-santoku-fs/README.md](../lua-santoku-fs/README.md) for those surfaces.
 
-## Module Reference
+This README is a usage guide, not an API reference. The tests are the spec:
+`test/spec/santoku/test/runner.lua` exercises the entrypoint's shape and its
+path-skipping behavior.
 
-| Function | Arguments | Returns | Description |
-|----------|-----------|---------|-------------|
-| `runner` | `fps, [opts]` | `nil` | Executes test files and directories |
+## Usage
 
-### Parameters
+```lua
+local runner = require("santoku.test.runner")
 
-**`fps`** `table`  
-Array of file paths to test. Each path can be:
-- Individual test file
-- Directory (runs all files recursively)
-- Non-existent path (silently skipped)
+runner({ "test/spec" }, {
+  interp = { "lua", "-l", "santoku.profile" },
+  match = "%.lua$",
+  stop = true,
+})
+```
 
-**`opts`** `table` (optional)  
-Configuration options:
+`fps` is an array of paths. Each entry is run in order:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `interp` | `table` | Interpreter command array (e.g., `{"lua", "-l", "module"}`) |
-| `match` | `string` | Pattern to filter files (uses Lua pattern matching) |
-| `stop` | `boolean` | Stop on first test failure (default: continue) |
+- A directory is traversed recursively (via `santoku.fs.files`); every file
+  found is processed.
+- A file is processed directly.
+- A path that does not exist is skipped without error.
 
-### Behavior
+`opts` is optional and honors three fields:
 
-- Processes file paths sequentially
-- Directories are traversed recursively for all files
-- Non-existent paths are skipped without error
-- Lua files (`.lua`) are executed in a sandboxed environment
-- Other files are executed as system commands
-- Test output is printed with "Test: filepath" prefix
-- Errors are printed to stdout
-- When `stop` is true, exits with code 1 on first failure
+- `interp`: an array forming an interpreter command. When set, each file is run
+  as a subprocess by appending the file path to a copy of this array and calling
+  `santoku.system.execute`. When unset, a `.lua` file is loaded in-process with
+  `santoku.fs.runfile` under an environment whose `__index` is `_G`; any other
+  file is executed directly as a command.
+- `match`: a Lua pattern. A file is processed only when its path matches.
+- `stop`: when true, the first failing file prints its error and exits the
+  process with status 1. When false (the default), failures are printed and the
+  run continues.
+
+Each processed file prints `Test:` followed by its path before running. Failures
+are caught with `santoku.error.pcall` and printed to stdout.
+
+covers: `test/spec/santoku/test/runner.lua`.
+
+## License
+
+MIT License
+
+Copyright 2025 Birch Point SWE
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
