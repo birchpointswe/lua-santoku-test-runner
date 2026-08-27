@@ -1,47 +1,3 @@
-<p align="center">
-  <img src="https://santoku.dev/logo-santoku-test-runner.png" height="64" alt="santoku-test-runner">
-</p>
-
-# santoku-test-runner
-
-The spec runner behind `toku test`. One function walks a list of paths, executes each
-spec file it finds, and reports failures. Lua files run in-process, anything else runs as
-a command, and `interp` runs each file through an interpreter of your choosing.
-
-## Install
-
-```sh
-luarocks install santoku-test-runner
-```
-
-## Example
-
-```lua
-local runner = require("santoku.test.runner")
-
-runner({ "test/spec" }, { match = "sqlite", stop = true })
-```
-
-Directories are walked recursively. `match` filters by Lua pattern, and `stop` halts at
-the first failure instead of running the whole suite.
-
-## Documentation
-
-Runnable examples and the full API:
-[santoku.dev](https://santoku.dev/#santoku-test-runner).
-
-## Tests
-
-The tests are the spec. For the exhaustive surface, read them:
-[`test/spec/santoku/test/runner.lua`](test/spec/santoku/test/runner.lua).
-
-## License
-
-MIT, see [LICENSE](LICENSE).
-
-## More examples
-
-```lua
 local test = require("santoku.test")
 
 local err = require("santoku.error")
@@ -90,4 +46,3 @@ end)
 test("paths that do not exist are skipped, not errors", function ()
   assert(eq(0, #ran({ "test/res/anchor_missing.lua" })))
 end)
-```

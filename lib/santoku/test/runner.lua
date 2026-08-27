@@ -72,8 +72,6 @@ return function (fps, opts)
     end
   end
 
-  if state.failed then
-    os.exit(1)
-  end
+  return not state.failed
 
 end
