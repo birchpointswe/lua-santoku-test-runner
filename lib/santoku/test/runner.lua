@@ -25,15 +25,16 @@ local smatch = string.match
 
 local run_env = setmetatable({}, { __index = _G })
 
-local function process_fp (fp, interp, match, stop)
+local function process_fp (state, fp, interp, match, stop)
   if fp and ((not match) or smatch(fp, match)) then
     print("Test:", fp)
     return (function (ok, ...)
-      if stop and not ok then
+      if not ok then
+        state.failed = true
         print(...)
-        os.exit(1)
-      elseif not ok then
-        print(...)
+        if stop then
+          os.exit(1)
+        end
       end
     end)(pcall(function ()
       if interp then
@@ -56,18 +57,23 @@ return function (fps, opts)
   local interp = opts.interp
   local match = opts.match
   local stop = opts.stop
+  local state = { failed = false }
 
   for i = 1, #fps do
     local fp = fps[i]
     if exists(fp) then
       if isdir(fp) then
         ieach(function (f)
-          process_fp(f, interp, match, stop)
+          process_fp(state, f, interp, match, stop)
         end, files(fp, true))
       else
-        process_fp(fp, interp, match, stop)
+        process_fp(state, fp, interp, match, stop)
       end
     end
+  end
+
+  if state.failed then
+    os.exit(1)
   end
 
 end
