@@ -41,7 +41,7 @@ local function process_fp (fp, interp, match, stop)
       elseif endswith(fp, ".lua") then
         runfile(fp, run_env)
       else
-        execute(fp)
+        execute({ fp })
       end
     end))
   end

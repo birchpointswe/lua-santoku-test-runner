@@ -9,9 +9,14 @@ discover and run files). See [../lua-santoku/README.md](../lua-santoku/README.md
 [../lua-santoku-system/README.md](../lua-santoku-system/README.md), and
 [../lua-santoku-fs/README.md](../lua-santoku-fs/README.md) for those surfaces.
 
+Documentation and runnable examples: [santoku.dev](https://santoku.dev), under the
+`santoku-test-runner` tab.
+
 This README is a usage guide, not an API reference. The tests are the spec:
-`test/spec/santoku/test/runner.lua` exercises the entrypoint's shape and its
-path-skipping behavior.
+`test/spec/santoku/test/runner.lua` exercises the entrypoint's shape, its
+path-skipping behavior, and each of the three dispatch branches (interpreter
+subprocess, in-process `.lua`, and direct command), including the error raised
+when a spawned file exits non-zero.
 
 ## Usage
 
