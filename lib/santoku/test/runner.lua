@@ -7,6 +7,7 @@ local hasindex = validate.hasindex
 
 local sys = require("santoku.system")
 local execute = sys.execute
+local sysexit = sys.exit
 
 local fs = require("santoku.fs")
 local exists = fs.exists
@@ -21,7 +22,7 @@ local ieach = arr.ieach
 
 local str = require("santoku.string")
 local endswith = str.endswith
-local smatch = string.match
+local smatch = str.match
 
 local run_env = setmetatable({}, { __index = _G })
 
@@ -33,7 +34,7 @@ local function process_fp (state, fp, interp, match, stop)
         state.failed = true
         print(...)
         if stop then
-          os.exit(1)
+          sysexit(1)
         end
       end
     end)(pcall(function ()

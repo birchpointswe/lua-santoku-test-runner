@@ -1,7 +1,7 @@
 local env = {
 
   name = "santoku-test-runner",
-  version = "2.0.3-1",
+  version = "2.0.4-1",
   variable_prefix = "TK_TEST_RUNNER",
   license = "MIT",
   public = true,
